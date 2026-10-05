@@ -1,0 +1,16 @@
+pre_remove() {
+    if [[ -d /run/systemd/system ]]; then
+        systemctl stop fx607-gpe02.service
+        systemctl disable fx607-gpe02.service
+    fi
+    if [[ -d /sys/module/fx607_gpe02 ]]; then
+        modprobe -r fx607_gpe02
+    fi
+}
+
+post_remove() {
+    if [[ -d /run/systemd/system ]]; then
+        systemctl daemon-reload
+    fi
+    echo 'Reboot to fully clear any GPE wake-capability flag added this boot.'
+}

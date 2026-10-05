@@ -1,0 +1,18 @@
+Source: fx607-gpe02
+Section: kernel
+Priority: optional
+Maintainer: Nixie404 <tudormares30@gmail.com>
+Build-Depends: dpkg-dev (>= 1.19), make, python3
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+
+Package: fx607-gpe02-dkms
+Architecture: all
+Depends: dkms (>= 3.0), make, gcc, kmod, systemd, init-system-helpers
+Recommends: linux-headers-amd64 | linux-headers-generic
+Description: experimental ASUS FX607VJ BIOS 340 lid wake workaround
+ Packages module source for DKMS. Arms GPE02 for wake only on ASUS FX607VJ
+ with BIOS FX607VJ.340. Lid wake was validated on one Ubuntu machine;
+ other kernels, power-button wake and keyboard wake remain unvalidated.
+ Installation builds the module but does not load it or enable its service.
+ Matching kernel headers are required on the installation target.

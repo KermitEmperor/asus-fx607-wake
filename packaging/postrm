@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+case "$1" in
+remove)
+    deb-systemd-helper disable fx607-gpe02.service >/dev/null
+    ;;
+purge)
+    deb-systemd-helper purge fx607-gpe02.service >/dev/null
+    ;;
+esac
+if [ -d /run/systemd/system ]; then systemctl daemon-reload; fi

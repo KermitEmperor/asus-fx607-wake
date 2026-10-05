@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: asus-fx607-wake
+
+Files: *
+Copyright: 2026 Nixie404
+License: GPL-2.0-only
+ This project is licensed under GPL version 2.
+ On Debian systems the full license is in /usr/share/common-licenses/GPL-2.
+ A full copy is also provided in the upstream LICENSE file.

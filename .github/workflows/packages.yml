@@ -1,0 +1,82 @@
+name: Build packages
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debian:
+    name: Debian package (${{ matrix.image }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: debian:trixie
+            headers: linux-headers-amd64
+            artifact: debian
+          - image: ubuntu:24.04
+            headers: linux-headers-generic
+            artifact: ubuntu
+    container: ${{ matrix.image }}
+    steps:
+      - name: Install build dependencies in CI container
+        env:
+          DEBIAN_FRONTEND: noninteractive
+          HEADERS: ${{ matrix.headers }}
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates make gcc python3 dpkg-dev "$HEADERS"
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check source and build Debian package
+        run: |
+          bash scripts/check.sh
+          dpkg-buildpackage --no-sign --build=binary
+          mkdir -p dist
+          cp ../fx607-gpe02-dkms_*.deb ../fx607-gpe02_*.buildinfo ../fx607-gpe02_*.changes dist/
+          python3 scripts/check-payloads.py dist/*.deb
+      - name: Compile packaged module against distribution headers
+        run: |
+          mkdir -p /tmp/fx607-payload
+          dpkg-deb -x dist/*.deb /tmp/fx607-payload
+          headers=$(find /usr/src -mindepth 1 -maxdepth 1 -type d -name 'linux-headers-*' \( -name '*-amd64' -o -name '*-generic' \) | sort | tail -n 1)
+          test -n "$headers"
+          make -C /tmp/fx607-payload/usr/src/fx607-gpe02-0.1.0 KDIR="$headers"
+          dpkg-deb --info dist/*.deb
+          dpkg-deb --contents dist/*.deb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}-packages
+          path: dist/*
+          if-no-files-found: error
+
+  arch:
+    name: Arch package
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - name: Install build dependencies in CI container
+        run: |
+          pacman -Syu --noconfirm --needed git python dkms linux-headers
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build as an unprivileged user
+        run: |
+          python scripts/update-arch-checksums.py --check
+          useradd --create-home builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          runuser -u builder -- bash -euo pipefail -c 'cd "$GITHUB_WORKSPACE"; makepkg --noconfirm; headers=$(find /usr/lib/modules -mindepth 2 -maxdepth 2 -name build -print -quit); test -n "$headers"; make KDIR="$headers"'
+          mkdir -p dist
+          cp ./*.pkg.tar.zst dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: arch-packages
+          path: dist/*.pkg.tar.zst
+          if-no-files-found: error

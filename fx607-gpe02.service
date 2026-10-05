@@ -1,0 +1,14 @@
+[Unit]
+Description=ASUS FX607VJ BIOS 340 GPE02 wake workaround
+After=systemd-modules-load.service
+Before=sleep.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecCondition=/usr/lib/fx607-gpe02/check-platform
+ExecStart=/sbin/modprobe fx607_gpe02
+ExecStop=/sbin/modprobe -r fx607_gpe02
+
+[Install]
+WantedBy=multi-user.target

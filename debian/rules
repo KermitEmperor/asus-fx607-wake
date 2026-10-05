@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+
+.PHONY: build build-arch build-indep binary binary-arch binary-indep clean
+build build-indep:
+	bash scripts/check.sh
+
+build-arch:
+
+binary: binary-indep
+
+binary-arch:
+
+binary-indep:
+	bash scripts/build-deb.sh ..
+	dpkg-distaddfile fx607-gpe02-dkms_0.1.0-1_all.deb kernel optional
+
+clean:
+	rm -f debian/files

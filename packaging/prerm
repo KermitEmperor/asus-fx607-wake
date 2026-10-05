@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+case "$1" in
+remove|deconfigure)
+    if [ -d /run/systemd/system ]; then systemctl stop fx607-gpe02.service; fi
+    # Also handle a manually loaded copy, whose service was never started.
+    if [ -d /sys/module/fx607_gpe02 ]; then modprobe -r fx607_gpe02; fi
+    if command -v dkms >/dev/null 2>&1 &&
+       [ -n "$(dkms status -m fx607-gpe02 -v 0.1.0)" ]; then
+        dkms remove -m fx607-gpe02 -v 0.1.0 --all
+    fi
+    ;;
+esac

@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+case "$1" in
+configure)
+    kernel=$(uname -r)
+    if [ ! -e "/lib/modules/$kernel/build/Makefile" ]; then
+        echo "Matching headers for $kernel are required. Install them, then run dpkg --configure fx607-gpe02-dkms." >&2
+        exit 1
+    fi
+    # No modprobe or service start: the current running kernel is untouched.
+    if [ -z "$(dkms status -m fx607-gpe02 -v 0.1.0)" ]; then
+        dkms add -m fx607-gpe02 -v 0.1.0
+    fi
+    dkms build -m fx607-gpe02 -v 0.1.0 -k "$kernel"
+    dkms install -m fx607-gpe02 -v 0.1.0 -k "$kernel"
+    # Boot activation is explicit, matching the Arch package's behavior.
+    deb-systemd-helper update-state fx607-gpe02.service >/dev/null
+    if [ -d /run/systemd/system ]; then systemctl daemon-reload; fi
+    echo 'Installed. To activate after review: systemctl enable --now fx607-gpe02.service'
+    ;;
+esac

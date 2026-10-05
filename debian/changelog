@@ -1,0 +1,7 @@
+fx607-gpe02 (0.1.0-1) unstable; urgency=medium
+
+  * Initial experimental release, restricted to FX607VJ BIOS 340.
+  * Package the validated GPE02 wake-mask quirk as DKMS source.
+  * Provide Debian and Arch builds with explicit boot activation.
+
+ -- Nixie404 <tudormares30@gmail.com>  Mon, 05 Oct 2026 23:40:00 +0300
