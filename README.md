@@ -1,7 +1,6 @@
 # ASUS FX607VJ lid wake workaround
 
-Experimental Linux DKMS module for **ASUS TUF Gaming F16 FX607VJ with BIOS
-FX607VJ.340**. Maintained by Nixie404.
+Experimental Linux DKMS module for **ASUS TUF Gaming F16 FX607VJ and FX607VUR with BIOS Version 340**. Forked from Nixie404.
 
 ## Evidence and scope
 
@@ -103,18 +102,6 @@ wakeups. With Secure Boot enabled, module signatures/MOK enrollment may be
 required according to your distribution's DKMS setup. This project does not
 disable Secure Boot or enroll keys. A BIOS update disables this workaround's
 hardware match intentionally; investigate new firmware before broadening it.
-
-## GitHub Actions
-
-`.github/workflows/packages.yml` builds Debian and Ubuntu `.deb` packages,
-an Arch package, and compiles module source against each distribution's
-available headers. Every push, pull request and manual run uploads build
-artifacts. The workflow has read-only repository permissions and does not
-automatically publish a release or install/load modules on the runner.
-
-CI compilation does not prove hardware behavior. GitHub workflows have not
-run until this repository is uploaded. Local Debian builds and the running
-kernel compile can be checked independently.
 
 ## Development and reporting
 
