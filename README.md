@@ -1,4 +1,4 @@
-# ASUS FX607VJ lid wake workaround
+# ASUS FX607 VJ/VUR lid wake workaround
 
 Experimental Linux DKMS module for **ASUS TUF Gaming F16 FX607VJ and FX607VUR with BIOS Version 340**. Forked from Nixie404.
 
